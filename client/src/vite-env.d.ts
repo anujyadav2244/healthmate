@@ -1,12 +1,19 @@
 /// <reference types="vite/client" />
-// src/env.d.ts
-export {};
+
+interface ImportMetaEnv {
+  readonly VITE_BACKEND_URL?: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
 
 declare global {
   interface Window {
-    _env_: {
-      BACKEND_URL: string;
-      // Add other env variables here if needed
+    _env_?: {
+      BACKEND_URL?: string;
     };
   }
 }
+
+export {};

@@ -1,4 +1,33 @@
-const BASE_URL = window._env_?.BACKEND_URL || "http://localhost:8080/api";
+const FALLBACK_API_BASE_URL = "https://healthmate.up.railway.app/api";
+
+function getRuntimeBackendUrl(): string {
+  if (typeof window === "undefined") {
+    return "";
+  }
+
+  return window._env_?.BACKEND_URL ?? "";
+}
+
+function normalizeApiBaseUrl(rawUrl: string): string {
+  const trimmedUrl = rawUrl.trim();
+  if (!trimmedUrl) {
+    return FALLBACK_API_BASE_URL;
+  }
+
+  const withProtocol = /^https?:\/\//i.test(trimmedUrl)
+    ? trimmedUrl
+    : `https://${trimmedUrl}`;
+  const withoutTrailingSlash = withProtocol.replace(/\/+$/, "");
+  return withoutTrailingSlash.endsWith("/api")
+    ? withoutTrailingSlash
+    : `${withoutTrailingSlash}/api`;
+}
+
+const BASE_URL = normalizeApiBaseUrl(
+  import.meta.env.VITE_BACKEND_URL ||
+    getRuntimeBackendUrl() ||
+    FALLBACK_API_BASE_URL
+);
 
 const API_ROUTES = {
   // Auth Routes
