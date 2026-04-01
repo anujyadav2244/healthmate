@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/diagnosis")
-@CrossOrigin(origins = "http://localhost:5173", allowCredentials = "true")
 public class DiagnosisController {
 
     private final GeminiService geminiService;

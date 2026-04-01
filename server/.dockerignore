@@ -1,0 +1,6 @@
+.git
+.gitignore
+target
+README.md
+package-lock.json
+src/test

@@ -1,7 +1,9 @@
 package com.healthmate.security;
 
+import jakarta.annotation.PostConstruct;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.nio.charset.StandardCharsets;
@@ -11,14 +13,33 @@ import java.util.Date;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET = "healthmateSecretKey123healthmateSecretKey123";
-    private final Key key = Keys.hmacShaKeyFor(SECRET.getBytes(StandardCharsets.UTF_8));
+    private final String secret;
+    private final long expirationMs;
+    private final Key key;
+
+    public JwtUtil(
+            @Value("${jwt.secret:healthmateSecretKey123healthmateSecretKey123}") String secret,
+            @Value("${jwt.expiration-ms:86400000}") long expirationMs) {
+        this.secret = secret;
+        this.expirationMs = expirationMs;
+        this.key = Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
+    }
+
+    @PostConstruct
+    public void validateConfig() {
+        if (secret == null || secret.length() < 32) {
+            throw new IllegalStateException("JWT secret must be at least 32 characters long.");
+        }
+        if (expirationMs <= 0) {
+            throw new IllegalStateException("JWT expiration must be greater than 0.");
+        }
+    }
 
     public String generateToken(String email) {
         return Jwts.builder()
                 .setSubject(email)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + 86400000)) 
+                .setExpiration(new Date(System.currentTimeMillis() + expirationMs))
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }

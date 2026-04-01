@@ -224,3 +224,30 @@ root/
     │           └── application-sample.properties
     └── pom.xml
 ```
+
+---
+
+## Deployment Checklist
+
+1. Copy `.env.production.example` and set real values for all secrets.
+2. Ensure `APP_CORS_ALLOWED_ORIGINS` includes your frontend domain(s).
+3. Ensure the load balancer health check path is `/health` on port `8080`.
+4. Build and publish the backend image from `server/Dockerfile`.
+5. Run the container with `SPRING_PROFILES_ACTIVE=prod` and the env variables above.
+
+### Required Production Environment Variables
+
+* `SPRING_APPLICATION_NAME`
+* `SPRING_DATA_MONGODB_URI`
+* `SPRING_DATA_MONGODB_DATABASE`
+* `SPRING_MAIL_HOST`
+* `SPRING_MAIL_PORT`
+* `SPRING_MAIL_USERNAME`
+* `SPRING_MAIL_PASSWORD`
+* `SPRING_MAIL_SMTP_AUTH`
+* `SPRING_MAIL_SMTP_STARTTLS_ENABLE`
+* `GEMINI_API_KEY`
+* `JWT_SECRET`
+* `JWT_EXPIRATION_MS`
+* `APP_CORS_ALLOWED_ORIGINS`
+* `SERVER_PORT` (optional, defaults to `8080`)
